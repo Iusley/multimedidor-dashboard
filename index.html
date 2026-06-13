@@ -2,54 +2,51 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Dashboard ESP32</title>
+<title>Login</title>
 
 <style>
 
 body{
-    font-family: Arial, sans-serif;
+    font-family:Arial,sans-serif;
     background:#f4f4f4;
-    margin:0;
-    padding:40px;
-}
-
-.container{
-    max-width:800px;
-    margin:auto;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
 }
 
 .card{
     background:white;
-    border-radius:12px;
     padding:30px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.2);
+    width:320px;
+}
+
+h2{
     text-align:center;
 }
 
-h1{
-    margin-bottom:20px;
+input{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    box-sizing:border-box;
 }
 
-#dispositivo{
-    font-size:22px;
-    font-weight:bold;
-}
-
-#valor{
-    font-size:60px;
-    margin:20px 0;
-    color:#0066cc;
-}
-
-#data{
-    color:#666;
-}
-
-#status{
+button{
+    width:100%;
+    padding:12px;
     margin-top:15px;
-    font-size:14px;
+    cursor:pointer;
+}
+
+#msg{
+    color:red;
+    text-align:center;
+    margin-top:10px;
 }
 
 </style>
@@ -57,21 +54,24 @@ h1{
 </head>
 <body>
 
-<div class="container">
+<div class="card">
 
-    <div class="card">
+<h2>Login</h2>
 
-        <h1>Dashboard ESP32</h1>
+<input
+id="usuario"
+placeholder="Usuário">
 
-        <div id="dispositivo">Carregando...</div>
+<input
+id="senha"
+type="password"
+placeholder="Senha">
 
-        <div id="valor">--</div>
+<button onclick="login()">
+Entrar
+</button>
 
-        <div id="data">--</div>
-
-        <div id="status">Conectando...</div>
-
-    </div>
+<p id="msg"></p>
 
 </div>
 
@@ -83,64 +83,54 @@ const SUPABASE_URL =
 const API_KEY =
 'sb_publishable_9dtpI4xp3oLuR36WTvbYSg_rEzY6Yrk';
 
-async function atualizar()
+async function login()
 {
+    let usuario =
+    document.getElementById("usuario").value.trim();
+
+    let senha =
+    document.getElementById("senha").value.trim();
+
+    const url =
+`${SUPABASE_URL}/rest/v1/usuarios?usuario=eq.${usuario}&senha=eq.${senha}`;
+
     try
     {
-        const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/telemetria?select=*&order=id.desc&limit=1`,
-            {
-                headers:
-                {
-                    "apikey": API_KEY,
-                    "Authorization": `Bearer ${API_KEY}`
-                }
+        const resposta =
+        await fetch(url,{
+            headers:{
+                apikey:API_KEY,
+                Authorization:`Bearer ${API_KEY}`
             }
-        );
+        });
 
-        if(!response.ok)
-        {
-            throw new Error(
-                `Erro HTTP ${response.status}`
-            );
-        }
-
-        const dados = await response.json();
+        const dados =
+        await resposta.json();
 
         if(dados.length > 0)
         {
-            document.getElementById("dispositivo").innerText =
-                dados[0].dispositivo;
+            localStorage.setItem("logado","sim");
+            localStorage.setItem("usuario",usuario);
 
-            document.getElementById("valor").innerText =
-                dados[0].valor;
-
-            document.getElementById("data").innerText =
-                new Date(
-                    dados[0].created_at
-                ).toLocaleString("pt-BR");
-
-            document.getElementById("status").innerText =
-                "Online";
+            location.href =
+            "dashboard.html";
         }
         else
         {
-            document.getElementById("status").innerText =
-                "Sem dados";
+            document.getElementById("msg")
+            .innerText =
+            "Usuário ou senha inválidos";
         }
     }
     catch(error)
     {
         console.error(error);
 
-        document.getElementById("status").innerText =
-            "Erro de conexão";
+        document.getElementById("msg")
+        .innerText =
+        "Erro de conexão";
     }
 }
-
-atualizar();
-
-setInterval(atualizar, 5000);
 
 </script>
 
