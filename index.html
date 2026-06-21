@@ -312,6 +312,9 @@ button.entrar.loading .entrar-label{
 
 <script>
 
+const API =
+'https://all-closely-list-occurrence.trycloudflare.com';
+
 function alternarSenha()
 {
     const campo =
@@ -370,7 +373,7 @@ async function login()
     try
     {
         const resposta =
-        await fetch('/login',{
+        await fetch(`${API}/login`,{
             method: 'POST',
             headers:{
                 'Content-Type':
