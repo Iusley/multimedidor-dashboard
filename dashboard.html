@@ -435,6 +435,9 @@ let nomesGrupos = {};
 
 let editandoGrupoId = null;
 
+const API =
+'https://all-closely-list-occurrence.trycloudflare.com';
+
 function toggleGrupo(grupoId)
 {
     const el =
@@ -554,9 +557,10 @@ async function salvarNomeGrupo(
 
     try
     {
-        await fetch(
-            '/grupos',
-            {
+    await fetch(
+    `${API}/grupos`,
+
+    {
                 method: "POST",
                 headers:
                 {
@@ -585,7 +589,7 @@ async function carregarNomesGrupos()
     try
     {
         const response =
-        await fetch('/grupos');
+        await fetch(`${API}/grupos`);
 
         const dados =
             await response.json();
@@ -619,7 +623,7 @@ async function atualizar()
     try
     {
         const response =
-        await fetch('/api/dashboard');
+        await fetch(`${API}/api/dashboard`);
 
         const dados =
             await response.json();
@@ -798,7 +802,7 @@ async function atualizar()
 function sair()
 {
     localStorage.clear();
-    location.href = "/index.html";
+    location.href = "index.html";
 }
 
 carregarNomesGrupos().then(
